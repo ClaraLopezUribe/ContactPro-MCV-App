@@ -15,12 +15,12 @@ namespace ContactPro.Models
 
         [Required]
         [Display(Name = "First Name")]
-        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long")]
+        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long", MinimumLength = 2)]
         public string? FirstName { get; set; }
 
         [Required]
         [Display(Name = "Last Name")]
-        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long")]
+        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long", MinimumLength = 2)]
         public string? LastName { get; set; }
 
         [NotMapped]
@@ -28,13 +28,11 @@ namespace ContactPro.Models
 
         [Display(Name = "Birthday")]
         [DataType(DataType.Date)]
-        public DateOnly? BirthDate { get; set; }
+        public DateTime? BirthDate { get; set; }
 
         [Required]
         [Display(Name = "Address")]
-
         public string? Address1 { get; set; }
-
         public string? Address2 { get; set; }
 
         [Required]
@@ -59,7 +57,7 @@ namespace ContactPro.Models
 
         [Required]
         [DataType(DataType.Date)]
-        public DateOnly? Created { get; set; }
+        public DateTime Created { get; set; }
 
         //Image properties (byte data, type)
         public byte[]? ImageData { get; set; }
