@@ -4,7 +4,7 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>EDIT CONTACT</h1>
+<h1>CREATE CONTACT</h1>
 <div class="p-3 border border-2 shadow-lg bg-light">
     <form asp-action="Create" asp-controller="Contacts" enctype="multipart/form-data">
         <div class="row g-3 p-2">
@@ -58,7 +58,7 @@
                     </div>
                     <div class="col-12 col-lg-4 mt-2">
                         <label asp-for="State" class="control-label"></label>
-                        <select asp-for="State" asp-items="Html.GetEnumSelectList<ContactPro.Enums.States>()" class="form-control"></select>
+                        <select asp-for="State" class="form-control" asp-items="ViewBag.StatesList"></select>
                         <span asp-validation-for="State" class="text-danger"></span>
                     </div>
                     <div class="col-12 col-lg-2 mt-2">
@@ -66,12 +66,12 @@
                         <input asp-for="ZipCode" class="form-control" />
                         <span asp-validation-for="ZipCode" class="text-danger"></span>
                     </div>
-                    <div class="col-12 col-lg-6 mt-4">
+                    <div class="col-12 col-lg-6 mt-3">
                         <label asp-for="Categories" class="control-label"></label>
-                        <select asp-for="Categories" name="CategoryList" class="form-control" asp-items="ViewBag.CategoryList" multiple></select>
+                        <select name="CategoryList" class="form-control" asp-items="ViewBag.CategoryList" multiple></select>
 
                     </div>
-                    <div class="col-12 col-lg-6 mt-4">
+                    <div class="col-12 col-lg-6 mt-3">
                         <label asp-for="BirthDate" class="control-label"></label>
                         <input asp-for="BirthDate" class="form-control" />
                         <span asp-validation-for="BirthDate" class="text-danger"></span>
@@ -84,8 +84,7 @@
         </div>
     </form>
 </div>
-    </div>
-</div>
+
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
