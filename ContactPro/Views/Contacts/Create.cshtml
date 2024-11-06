@@ -4,17 +4,19 @@
     ViewData["Title"] = "Create";
 }
 
+
 <h1>CREATE CONTACT</h1>
 <div class="p-3 border border-2 shadow-lg bg-light">
     <form asp-action="Create" asp-controller="Contacts" enctype="multipart/form-data">
         <div class="row g-3 p-2">
+
             <div class="col-12 col-lg-4">
                 <div class="square-img-container">
-                    <img class="square-img" src="~/img/DefaultContactImage.png">
+                    <img id="contactImage" class="square-img" src="~/img/DefaultContactImage.png">
                 </div>
                 <div>
                     <label asp-for="ImageFile" class="control-label visually-hidden"></label>
-                    <input asp-for="ImageFile" class="form-control mt-3" accept=".png,.jpg,.jpeg,.gif">
+                    <input asp-for="ImageFile" class="form-control mt-3" accept=".png,.jpg,.jpeg,.gif" onchange="document.getElementById('contactImage').src=window.URL.createObjectURL(this.files[0])" />
                     <span asp-validation-for="ImageFile" class="text-danger"></span>
                 </div>
             </div>
