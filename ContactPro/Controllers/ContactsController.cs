@@ -79,7 +79,7 @@ namespace ContactPro.Controllers
         [ValidateAntiForgeryToken]
         // Authorize not necessary on POST, but can be add if desired
         // [Authorize]
-        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,BirthDate,Address1,Address2,City,State,ZipCode,Email,PhoneNumber,ImageFile")] Contact contact)
+        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,BirthDate,Address1,Address2,City,State,ZipCode,Email,PhoneNumber,ImageFile")] Contact contact, List<int> CategoryList)
         {
             ModelState.Remove("AppUserId");
             
@@ -101,6 +101,14 @@ namespace ContactPro.Controllers
 
                 _context.Add(contact);
                 await _context.SaveChangesAsync();
+
+                // Loop over all the selected categories
+                foreach (int categoryId in CategoryList)
+                {
+                    await _addressBookService.AddContactToCategoryAsync(categoryId, contact.Id);
+                }
+                // Save each category selected to the contactCategories table (created at build time)
+
                 return RedirectToAction(nameof(Index));
             }
 
@@ -171,8 +179,8 @@ namespace ContactPro.Controllers
             }
 
             var contact = await _context.Contacts
-                .Include(c => c.AppUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                                        .Include(c => c.AppUser)
+                                        .FirstOrDefaultAsync(m => m.Id == id);
             if (contact == null)
             {
                 return NotFound();
