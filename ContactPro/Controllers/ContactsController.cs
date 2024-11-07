@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using ContactPro.Data;
-using ContactPro.Models;
+using ContactPro.Migrations;
 using ContactPro.Enums;
-using ContactPro.Services;
+using ContactPro.Models;
 using ContactPro.Services.Interfaces;
 
 
@@ -35,10 +32,37 @@ namespace ContactPro.Controllers
         // GET: Contacts
         // Can add roles here if desired
         [Authorize]
-        public async Task<IActionResult> Index()
+        public IActionResult Index(int categoryId)
         {
-            var applicationDbContext = _context.Contacts.Include(c => c.AppUser);
-            return View(await applicationDbContext.ToListAsync());
+            List<Contact> contacts = new List<Contact>();
+            string appUserId = _userManager.GetUserId(User)!;
+
+            // Return the userId and its associalted contacts and categories
+            AppUser appUser = _context.Users
+                                      .Include(c => c.Contacts)
+                                      .ThenInclude(c => c.Categories)
+                                      .FirstOrDefault(u => u.Id == appUserId)!;
+
+            var categories = appUser.Categories;
+
+            if(categoryId == 0) { 
+            contacts = appUser.Contacts.OrderBy(c => c.LastName)
+                              .ThenBy(c => c.FirstName)
+                              .ToList();
+            }
+            else
+            {
+                contacts = appUser.Categories.FirstOrDefault(c => c.Id == categoryId)
+                                             .Contacts
+                                             .OrderBy(c => c.LastName)
+                                             .ThenBy(c => c.FirstName)
+                                             .ToList();
+            }
+
+
+            ViewData["CategoryId"] = new SelectList(categories, "Id", "Name", categoryId);
+
+            return View(contacts);
         }
 
         // GET: Contacts/Details/5
