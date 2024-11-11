@@ -94,7 +94,13 @@ namespace ContactPro.Controllers
 
             return View(nameof(Index), contacts);
         }
-    
+
+        //Get: Contacts/Email
+        [Authorize]
+        public IActionResult EmailContact(int contactId)
+        {
+            return View();
+        }
 
         // GET: Contacts/Details/5
         [Authorize]
