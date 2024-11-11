@@ -18,7 +18,7 @@ namespace ContactPro.Services
         {
             try
             {
-                // Check if the category is in the category
+                // Check if the contact is in the category
                 if (!await IsContactInCategory(categoryId, contactId))
                 {
                     Contact? contact = await _context.Contacts.FindAsync(contactId);
