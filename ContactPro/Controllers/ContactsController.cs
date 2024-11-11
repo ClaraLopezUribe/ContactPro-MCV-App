@@ -1,14 +1,13 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using ContactPro.Data;
-using ContactPro.Migrations;
 using ContactPro.Enums;
 using ContactPro.Models;
 using ContactPro.Services.Interfaces;
+using ContactPro.Models.ViewModels;
 
 
 namespace ContactPro.Controllers
@@ -97,9 +96,32 @@ namespace ContactPro.Controllers
 
         //Get: Contacts/Email
         [Authorize]
-        public IActionResult EmailContact(int contactId)
+        public async Task<IActionResult> EmailContact(int id)
         {
-            return View();
+            
+            string appUserId = _userManager.GetUserId(User);
+            Contact contact = await _context.Contacts.Where(c => c.Id == id && c.AppUserId == appUserId)
+                                                     .FirstOrDefaultAsync();
+            if (contact == null)
+            {
+                return NotFound();
+            }
+
+            EmailData emailData = new EmailData()
+            {
+                EmailAddress = contact.Email,
+                FirstName = contact.FirstName,
+                LastName = contact.LastName,
+            };
+
+            EmailContactViewModel model = new EmailContactViewModel()
+            {
+                Contact = contact,
+                EmailData = emailData,
+
+            };
+
+            return View(model);
         }
 
         // GET: Contacts/Details/5
