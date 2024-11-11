@@ -174,12 +174,21 @@ namespace ContactPro.Controllers
         [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Contacts == null)
             {
                 return NotFound();
             }
 
-            var contact = await _context.Contacts.FindAsync(id);
+
+            // SECURITY: Verify that the contact belongs to user before returning to the View
+
+            string appUserId = _userManager.GetUserId(User);
+
+            // var contact = await _context.Contacts.FindAsync(id);
+
+            var contact = await _context.Contacts.Where(c => c.Id == id && c.AppUserId == appUserId)
+                                                 .FirstOrDefaultAsync();
+
             if (contact == null)
             {
                 return NotFound();
