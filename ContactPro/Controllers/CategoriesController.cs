@@ -32,7 +32,7 @@ namespace ContactPro.Controllers
                                                 .Include(c => c.AppUser)
                                                 .ToListAsync();
 
-            return View(await categories);
+            return View(categories);
         }
 
         // GET: Categories/Details/5
@@ -119,6 +119,10 @@ namespace ContactPro.Controllers
             {
                 try
                 {
+                    //Ensure the signed-in user is only allowed to edit their own categories
+                    string appUserId = _userManager.GetUserId(User);
+                    category.AppUserId = appUserId;
+
                     _context.Update(category);
                     await _context.SaveChangesAsync();
                 }
@@ -135,7 +139,7 @@ namespace ContactPro.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AppUserId"] = new SelectList(_context.Users, "Id", "Id", category.AppUserId);
+            
             return View(category);
         }
 
@@ -150,7 +154,7 @@ namespace ContactPro.Controllers
 
             var category = await _context.Categories
                 .Include(c => c.AppUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(c => c.Id == id);
             if (category == null)
             {
                 return NotFound();
