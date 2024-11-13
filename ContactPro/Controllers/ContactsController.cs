@@ -3,14 +3,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 using ContactPro.Data;
 using ContactPro.Enums;
 using ContactPro.Models;
-using ContactPro.Services.Interfaces;
 using ContactPro.Models.ViewModels;
 using ContactPro.Services.Interfaces;
 
@@ -62,9 +59,9 @@ namespace ContactPro.Controllers
 
             if (categoryId == 0)
             {
-            contacts = appUser.Contacts.OrderBy(c => c.LastName)
-                              .ThenBy(c => c.FirstName)
-                              .ToList();
+                contacts = appUser.Contacts.OrderBy(c => c.LastName)
+                                  .ThenBy(c => c.FirstName)
+                                  .ToList();
             }
             else
             {
@@ -115,7 +112,7 @@ namespace ContactPro.Controllers
         [Authorize]
         public async Task<IActionResult> EmailContact(int id)
         {
-            
+
             string appUserId = _userManager.GetUserId(User);
             Contact contact = await _context.Contacts.Where(c => c.Id == id && c.AppUserId == appUserId)
                                                      .FirstOrDefaultAsync();
@@ -135,7 +132,6 @@ namespace ContactPro.Controllers
             {
                 Contact = contact,
                 EmailData = emailData,
-
             };
 
             return View(model);
@@ -204,7 +200,7 @@ namespace ContactPro.Controllers
         public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,BirthDate,Address1,Address2,City,State,ZipCode,Email,PhoneNumber,ImageFile")] Contact contact, List<int> CategoryList)
         {
             ModelState.Remove("AppUserId");
-            
+
             if (ModelState.IsValid)
             {
                 contact.AppUserId = _userManager.GetUserId(User);
@@ -333,14 +329,14 @@ namespace ContactPro.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Contacts == null)
             {
                 return NotFound();
             }
 
-            var contact = await _context.Contacts
-                                        .Include(c => c.AppUser)
-                                        .FirstOrDefaultAsync(m => m.Id == id);
+            string appUserId = _userManager.GetUserId(User);
+            Contact contact = await _context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.AppUserId == appUserId);
+           
             if (contact == null)
             {
                 return NotFound();
@@ -354,13 +350,16 @@ namespace ContactPro.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var contact = await _context.Contacts.FindAsync(id);
+            string appUserId = _userManager.GetUserId(User);
+            
+            var contact = await _context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.AppUserId == appUserId);
+
             if (contact != null)
             {
                 _context.Contacts.Remove(contact);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
+            
             return RedirectToAction(nameof(Index));
         }
 
