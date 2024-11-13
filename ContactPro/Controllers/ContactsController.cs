@@ -1,38 +1,54 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+
 using ContactPro.Data;
 using ContactPro.Enums;
 using ContactPro.Models;
 using ContactPro.Services.Interfaces;
 using ContactPro.Models.ViewModels;
+using ContactPro.Services.Interfaces;
+
+
 
 
 namespace ContactPro.Controllers
 {
     public class ContactsController : Controller
     {
+        // Injections
         // The underscore in the variable indicates it is a private variable
         private readonly ApplicationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly IImageService _imageService;
         private readonly IAddressBookService _addressBookService;
+        private readonly IEmailSender _emailService;
 
-        public ContactsController(ApplicationDbContext context, UserManager<AppUser> userManager, IImageService imageService, IAddressBookService addressBookService)
+        public ContactsController(ApplicationDbContext context,
+                                  UserManager<AppUser> userManager,
+                                  IImageService imageService,
+                                  IAddressBookService addressBookService,
+                                  IEmailSender emailService)
         {
             _context = context;
             _userManager = userManager;
             _imageService = imageService;
             _addressBookService = addressBookService;
+            _emailService = emailService;
         }
 
         // GET: Contacts
         // Can add roles here if desired
         [Authorize]
-        public IActionResult Index(int categoryId)
+        public IActionResult Index(int categoryId, string? swalMessage = null)
         {
+            ViewData["SwalMessage"] = swalMessage;
+
             List<Contact> contacts = new List<Contact>();
             string appUserId = _userManager.GetUserId(User)!;
 
@@ -44,7 +60,8 @@ namespace ContactPro.Controllers
 
             var categories = appUser.Categories;
 
-            if(categoryId == 0) { 
+            if (categoryId == 0)
+            {
             contacts = appUser.Contacts.OrderBy(c => c.LastName)
                               .ThenBy(c => c.FirstName)
                               .ToList();
@@ -89,7 +106,7 @@ namespace ContactPro.Controllers
                                   .ToList();
             }
 
-            ViewData["CategoryId"] = new SelectList(appUser.Categories,"Id", "Name", 0);
+            ViewData["CategoryId"] = new SelectList(appUser.Categories, "Id", "Name", 0);
 
             return View(nameof(Index), contacts);
         }
@@ -122,6 +139,28 @@ namespace ContactPro.Controllers
             };
 
             return View(model);
+        }
+
+        //POST: Contacts/Email
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> EmailContact(EmailContactViewModel ecvm)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _emailService.SendEmailAsync(ecvm.EmailData.EmailAddress, ecvm.EmailData.Subject, ecvm.EmailData.Body);
+
+                    return RedirectToAction("Index", "Contacts", new { swalMessage = "Success: Email Sent!" });
+                }
+                catch
+                {
+                    return RedirectToAction("Index", "Contacts", new { swalMessage = "Error: Email Send Failed!" });
+                    throw;
+                }
+            }
+            return View(ecvm);
         }
 
         // GET: Contacts/Details/5

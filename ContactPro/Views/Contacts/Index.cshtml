@@ -50,17 +50,19 @@
                                 else
                                 {
                                     <img src="@ImageService.ConvertByteArrayToFile(contact.ImageData!,contact.ImageType!)" class="square-img rounded-start" alt="Contact image" />
-                                }                                
+                                }
                             </div>
                             <div class="col-md-8">
                                 <div class="card-body">
                                     <h5 class="card-title">@Html.DisplayFor(modelItem => contact.FullName)</h5>
                                     <address class="card-text">
                                         @Html.DisplayFor(modelItem => contact.Address1)<br>
-                                        
-                                        @if (contact.Address2 !=null)
+
+                                        @if (contact.Address2 != null)
                                         {
-                                            @Html.DisplayFor(modelItem => contact.Address2)<br>
+                                            @Html.DisplayFor(modelItem => contact.Address2)
+
+                                            <br>
                                         }
                                         @Html.DisplayFor(modelItem => contact.City), @Html.DisplayFor(modelItem => contact.State) @Html.DisplayFor(modelItem => contact.ZipCode)
                                     </address>
@@ -80,7 +82,33 @@
                         </div>
                     </div>
                 </div>
-            } 
+            }
         </div>
     </div>
 </div>
+
+@section scripts {
+    <!--Sweet Alerts-->
+    <script>
+        let message = '@(ViewBag.SwalMessage)';
+
+        if (!message.includes("Error") && message != '')
+        {
+            Swal.fire({
+                backdrop: false,
+                icon: 'success',
+                title: message,
+                showConfirmButton: true
+            });
+        }
+        else if (message.includes("Error"))
+        {
+            Swal.fire({
+                backdrop: false,
+                icon: 'error',
+                title: 'Oops...',
+                text: message
+            });
+        };
+    </script>
+}

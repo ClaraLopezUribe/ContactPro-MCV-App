@@ -1,9 +1,10 @@
-﻿using ContactPro.Models;
-using Microsoft.AspNetCore.Identity.UI.Services;
+﻿using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Options;
 using MimeKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+
+using ContactPro.Models;
 
 namespace ContactPro.Services
 {
@@ -55,7 +56,6 @@ namespace ContactPro.Services
             {
                 var error = ex.Message;
                 throw;
-
             }
         }
     }
