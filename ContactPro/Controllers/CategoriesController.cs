@@ -28,7 +28,7 @@ namespace ContactPro.Controllers
         {
             string appUserId = _userManager.GetUserId(User);
 
-            var categories = _context.Categories.Where(c => c.AppUserId == appUserId)
+            var categories = await _context.Categories.Where(c => c.AppUserId == appUserId)
                                                 .Include(c => c.AppUser)
                                                 .ToListAsync();
 
