@@ -32,7 +32,7 @@ namespace ContactPro.Controllers
                                                 .Include(c => c.AppUser)
                                                 .ToListAsync();
 
-            return View(categories);
+            return View(await categories);
         }
 
         // GET: Categories/Details/5
