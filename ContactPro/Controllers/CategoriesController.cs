@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,23 +10,30 @@ using ContactPro.Models;
 using ContactPro.Models.ViewModels;
 
 
+
 namespace ContactPro.Controllers
 {
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IEmailSender _emailService;
 
-        public CategoriesController(ApplicationDbContext context, UserManager<AppUser> userManager)
+        public CategoriesController(ApplicationDbContext context, 
+                                    UserManager<AppUser> userManager,
+                                    IEmailSender emailService)
         {
             _context = context;
             _userManager = userManager;
+            _emailService = emailService;
         }
 
         // GET: Categories
         [Authorize]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string swalMessage = null)
         {
+            ViewData["SwalMessage"] = swalMessage;
+
             string appUserId = _userManager.GetUserId(User);
 
             var categories = await _context.Categories.Where(c => c.AppUserId == appUserId)
@@ -35,6 +43,7 @@ namespace ContactPro.Controllers
             return View(categories);
         }
 
+        //GET: Categories/EmailCategory
         [Authorize]
         public async Task<ActionResult> EmailCategory(int id)
         {
@@ -61,6 +70,26 @@ namespace ContactPro.Controllers
             return View(model);
         }
 
+        //POST: Categories/EmailCategories
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> EmailCategory(EmailCategoryViewModel ecvm)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _emailService.SendEmailAsync(ecvm.EmailData.EmailAddress, ecvm.EmailData.Subject, ecvm.EmailData.Body);
+                    return RedirectToAction("Index", "Categories", new { swalMessage = "Success: Email Sent" });
+                }
+                catch
+                {
+                    return RedirectToAction("Index", "Categories", new { swalMessage = "Error: Email Failed to Send" });
+                    throw;
+                }
+            }
+            return View(ecvm);
+        }
 
         // GET: Categories/Details/5
         [Authorize]
