@@ -35,6 +35,33 @@ namespace ContactPro.Controllers
             return View(categories);
         }
 
+        [Authorize]
+        public async Task<ActionResult> EmailCategory(int id)
+        {
+            string appUserId = _userManager.GetUserId(User);
+
+            Category category = await _context.Categories
+                                      .Include(c => c.Contacts)
+                                      .FirstOrDefaultAsync(c => c.Id ==id && c.AppUserId == appUserId);
+            List<string> emails = category.Contacts.Select(c => c.Email).ToList();
+
+            EmailData emailData = new EmailData()
+            {
+                GroupName = category.Name,
+                EmailAddress = string.Join(";", emails),
+                Subject = $"Group Message: {category.Name}"
+            };
+
+            EmailCategoryViewModel model = new EmailCategoryViewModel()
+            {
+                Contacts = category.Contacts.ToList(),
+                EmailData = emailData
+            };
+
+            return View(model);
+        }
+
+
         // GET: Categories/Details/5
         [Authorize]
         public async Task<IActionResult> Details(int? id)
