@@ -4,14 +4,14 @@ using ContactPro.Data;
 
 namespace ContactPro.Helpers
 {
-    public class DataHelper
+    public static class DataHelper
     {
         public static async Task ManageDataAsync(IServiceProvider svcProvider)
         {
-            // Get an instance of the db application contxt
+            // Service: Get an instance of db context
             var dbContextSvc = svcProvider.GetRequiredService<ApplicationDbContext>();
 
-            // Migration: This is equivalent to update-database
+            // Migration: This is the programmatic equivalent to Update-Database
             await dbContextSvc.Database.MigrateAsync();
         }
     }

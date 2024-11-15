@@ -13,7 +13,7 @@ namespace ContactPro.Helpers
             return string.IsNullOrEmpty(databaseUrl) ? connetionString : BuildConnectionString(databaseUrl);
         }
 
-        // Build a connection string from the environment (i.e. Heroku or Railway)
+        // Build the connection string from the environment (i.e. Heroku or Railway)
         private static string BuildConnectionString(string databaseUrl)
         {
             var databaseUri = new Uri(databaseUrl);
