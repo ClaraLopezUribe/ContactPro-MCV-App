@@ -2,7 +2,7 @@
 
 namespace ContactPro.Helpers
 {
-    public class ConnectionHelper
+    public static class ConnectionHelper
     {
         public static string GetConnectionString(IConfiguration configuration)
         {
