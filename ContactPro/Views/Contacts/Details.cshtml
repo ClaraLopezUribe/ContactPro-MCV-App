@@ -1,4 +1,7 @@
-﻿@model ContactPro.Models.Contact
+﻿@* (This view may be useful to limit the information displayed on the contact card UI, while giving the user access to additional details)
+
+
+@model ContactPro.Models.Contact
 
 @{
     ViewData["Title"] = "Details";
@@ -100,3 +103,4 @@
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to Contact List</a>
 </div>
+*@

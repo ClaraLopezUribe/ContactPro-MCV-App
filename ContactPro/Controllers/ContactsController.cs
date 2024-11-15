@@ -18,8 +18,7 @@ namespace ContactPro.Controllers
 {
     public class ContactsController : Controller
     {
-        // Injections
-        // The underscore in the variable indicates it is a private variable
+        // Injections: Declare private fields (like unassigned variables) to hold the values of the corresponding models and services
         private readonly ApplicationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
         private readonly IImageService _imageService;
@@ -159,25 +158,26 @@ namespace ContactPro.Controllers
             return View(ecvm);
         }
 
-        // GET: Contacts/Details/5
-        [Authorize]
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        // GET: Contacts/Details/5 (may be useful to limit what is shown on the contact card, but still useful reference for the user)
+        //[Authorize]
+        //public async Task<IActionResult> Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var contact = await _context.Contacts
-                .Include(c => c.AppUser)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (contact == null)
-            {
-                return NotFound();
-            }
+        //    var contact = await _context.Contacts
+        //        .Include(c => c.AppUser)
+        //        .FirstOrDefaultAsync(c => c.Id == id);
+        //    if (contact == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(contact);
-        }
+        //    return View(contact);
+        //}
+
 
         // GET: Contacts/Create
         [Authorize]
