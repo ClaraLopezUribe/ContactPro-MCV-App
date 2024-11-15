@@ -19,7 +19,7 @@ namespace ContactPro.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly IEmailSender _emailService;
 
-        public CategoriesController(ApplicationDbContext context, 
+        public CategoriesController(ApplicationDbContext context,
                                     UserManager<AppUser> userManager,
                                     IEmailSender emailService)
         {
@@ -51,7 +51,7 @@ namespace ContactPro.Controllers
 
             Category category = await _context.Categories
                                       .Include(c => c.Contacts)
-                                      .FirstOrDefaultAsync(c => c.Id ==id && c.AppUserId == appUserId);
+                                      .FirstOrDefaultAsync(c => c.Id == id && c.AppUserId == appUserId);
             List<string> emails = category.Contacts.Select(c => c.Email).ToList();
 
             EmailData emailData = new EmailData()
@@ -154,7 +154,8 @@ namespace ContactPro.Controllers
 
             string appUserId = _userManager.GetUserId(User);
 
-            var category = await _context.Categories.Where(c => c.Id == id && c.AppUserId == appUserId).FirstOrDefaultAsync();
+            var category = await _context.Categories.Where(c => c.Id == id && c.AppUserId == appUserId)
+                                                    .FirstOrDefaultAsync();
 
             if (category == null)
             {
@@ -208,14 +209,16 @@ namespace ContactPro.Controllers
         [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (id == null || _context.Categories == null)
             {
                 return NotFound();
             }
 
+            string appUserId = _userManager.GetUserId(User);
+
             var category = await _context.Categories
-                .Include(c => c.AppUser)
-                .FirstOrDefaultAsync(c => c.Id == id);
+                                         .FirstOrDefaultAsync(c => c.Id == id && c.AppUserId == appUserId);
+
             if (category == null)
             {
                 return NotFound();
@@ -229,13 +232,16 @@ namespace ContactPro.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
+            string appUserId = _userManager.GetUserId(User);
+
+            var category = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id && c.AppUserId == appUserId);
+
             if (category != null)
             {
                 _context.Categories.Remove(category);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

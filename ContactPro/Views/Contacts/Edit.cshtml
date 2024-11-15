@@ -9,8 +9,7 @@
 }
 
 <h1>Edit Contact</h1>
-
-<div class="p-3 border border-2 shadow-lg bg-light">
+<div class="p-3 border border-2 shadow-lg bg-light mt-3">
     <form asp-action="Edit" asp-controller="Contacts" enctype="multipart/form-data">
         <div class="row g-3 p-2">
             <input type="hidden" asp-for="Id" />
@@ -104,7 +103,7 @@
     </form>
 </div>
 
-<div>
+<div class="mt-4">
     <a asp-action="Index">Back to Contact List</a>
 </div>
 
