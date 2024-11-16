@@ -8,7 +8,7 @@ namespace ContactPro.Helpers
         {
             var connetionString = configuration.GetSection("pgSettings")["pgConnection"];
 
-            var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+            var databaseUrl = Environment.GetEnvironmentVariable("NIXPACKS_CSHARP_SDK_VERSION");
 
             return string.IsNullOrEmpty(databaseUrl) ? connetionString : BuildConnectionString(databaseUrl);
         }
