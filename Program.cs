@@ -5,6 +5,7 @@ using ContactPro.Services;
 using ContactPro.Services.Interfaces;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using ContactPro.Helpers;
+using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -64,3 +65,4 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
+
